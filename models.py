@@ -1,30 +1,16 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Enum
-from sqlalchemy import Enum as SQLAlchemyEnum
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum
 from enum import Enum as PyEnum
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.future import select
 from sqlalchemy.orm import sessionmaker
 from fastapi import HTTPException
 
 DATABASE_URL = "postgresql+asyncpg://root:root@localhost:5432/book_management"
-# DATABASE_URL = "sqlite+aiosqlite:///./book_management.db"
 
 
 Base = declarative_base()
 
-
-
-
-# User Model
-# class User(Base):
-#     __tablename__ = 'users'
-
-#     id = Column(Integer, primary_key=True, index=True)
-#     username = Column(String, unique=True, index=True)
-#     email = Column(String, unique=True, index=True)
-#     password = Column(String)
 
 # Enum for book genres
 class Genre(PyEnum):
@@ -49,7 +35,7 @@ class Genre(PyEnum):
     Self_Help = "Self-Help"
     Poetry = "Poetry"
 
-# Enum for user roles
+
 class Role(PyEnum):
     USER = "user"
     ADMIN = "admin"
@@ -61,20 +47,20 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     password = Column(String)
-    interested_genre = Column(SQLAlchemyEnum(Genre), nullable=False)
-    role = Column(SQLAlchemyEnum(Role), default=Role.USER, nullable=False)  # Adding role column with default value
+    interested_genre = Column(Enum(Genre), nullable=False)
+    role = Column(Enum(Role), default=Role.USER, nullable=False)
 
 
-# Book Model
 class Book(Base):
     __tablename__ = 'books'
     
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     author = Column(String, index=True)
-    genre = Column(String)
+    genre = Column(Enum(Genre), nullable=False)
     year_published = Column(Integer)
-    summary = Column(String)
+    summary = Column(String,nullable=True)
+
 
 class Review(Base):
     __tablename__ = 'reviews'
